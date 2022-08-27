@@ -119,9 +119,10 @@ export class RecipeJS
 
   /**
    * Exec function
-   * ...is called, whenever a registered event happens.
+   * ...is called, whenever a registered event happens and calls the
+   * "request" function.
    *
-   * AWAIT waits for the "request" function to finish, but as the function
+   * Await waits for the "request" function to finish, but as the function
    * gets called multiple times when multiple events happen at more
    * or less the same time, it doesn't wait for the requests to return "in order".
    *
