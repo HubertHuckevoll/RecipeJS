@@ -119,23 +119,24 @@ export class RecipeJS
 
   /**
    * Exec function
-   * Is called whenever a registered event happens.
+   * ...is called, whenever a registered event happens.
    *
    * AWAIT waits for the request function to finish, but as the function
-   * is called multiple times when multiple events happen at more
+   * gets called multiple times when multiple events happen at more
    * or less the same time, it doesn't wait for the requests to return "in order".
    *
-   * All requests are  assigned a reuest number (reqNo)
-   * and the result for each request is stored in the requestQueue with
-   * the request number as index (see the "request" function).
+   * All requests are therefore assigned a request number ("reqNo")
+   * and the result for each request is stored in a "requestQueue" with
+   * the "reqNo" as index (see the "request" function).
    *
-   * Whenever we issue a request, request counter goes up.
-   * Whenever a request returns, the request counter goes down.
-   * When all "concurrent" requests have returned, the request counter
+   * Whenever we issue a request, "requestCounter" goes up.
+   * Whenever a request returns, "requestCounter" goes down.
+   * When all concurrent requests have returned, "requestCounter"
    * should be zero again.
    *
-   * Once all requests have settled down, we can start cooking the recipes
-   * in order of how the events happened.
+   * We check if requestCounter is zero after each request has returned.
+   * Once all requests have settled down and "requestCounter" is zero,
+   * we start cooking the recipes in the order of how the events happened.
    * ________________________________________________________________
    *
    */
