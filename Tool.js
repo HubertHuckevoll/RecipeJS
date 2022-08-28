@@ -13,11 +13,21 @@ export class Tool
   {
     return new Promise((resolve, reject) =>
     {
-      this[method](rcp);
-      resolve();
+      if (typeof this[method] === "function")
+      {
+        this[method](rcp);
+        resolve();
+      }
+      else
+      {
+        reject('tool: "' + method + '" unknown.');
+      }
     });
   }
 
+  /**
+   * LOG server side msg
+   */
   log(rcp)
   {
     console.log(rcp.msg);

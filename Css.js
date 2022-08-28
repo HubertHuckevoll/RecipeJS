@@ -12,16 +12,24 @@ export class Css
   exec(method, rcp)
   {
     let result = null;
-    let nodes = document.querySelectorAll(rcp.target);
-    this.log('Executing', rcp.module, '/', rcp.method, 'on', rcp.target);
 
-    if (nodes.length > 0)
+    if (typeof this[method] === "function")
     {
-      result = this[method](nodes, rcp);
+      let nodes = document.querySelectorAll(rcp.target);
+      this.log('Executing', rcp.module, '/', rcp.method, 'on', rcp.target);
+
+      if (nodes.length > 0)
+      {
+        result = this[method](nodes, rcp);
+      }
+      else
+      {
+        throw('css: "' + rcp.target + '" yields no elements.');
+      }
     }
     else
     {
-      throw('css: "' + rcp.target + '" yields no elements.');
+      reject('css: "' + method + '" unknown.');
     }
 
     return result;
