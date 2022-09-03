@@ -31,6 +31,50 @@ class RecipeJS
     ]);
   }
 
+  public function append(string $target, string $html): void
+  {
+    $this->addOutput(
+      [
+        'module' => 'dom',
+        'method' => 'append',
+        'target' => $target,
+        'html' => $html
+      ]);
+  }
+
+  public function prepend(string $target, string $html)
+  {
+    $this->addOutput(
+      [
+        'module' => 'dom',
+        'method' => 'prepend',
+        'target' => $target,
+        'html' => $html
+      ]);
+  }
+
+  public function before(string $target, string $html)
+  {
+    $this->addOutput(
+      [
+        'module' => 'dom',
+        'method' => 'before',
+        'target' => $target,
+        'html' => $html
+      ]);
+  }
+
+  public function after(string $target, string $html)
+  {
+    $this->addOutput(
+      [
+        'module' => 'dom',
+        'method' => 'after',
+        'target' => $target,
+        'html' => $html
+      ]);
+  }
+
   public function domAttr(string $target, string $attrName, string $attrVal)
   {
     $this->addOutput(
