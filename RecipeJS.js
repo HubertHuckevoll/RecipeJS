@@ -1,14 +1,14 @@
-import { Dom } from './Dom.js';
-import { Css } from './Css.js';
-import { Event } from './Event.js';
-import { Focus } from './Focus.js';
-import { Tool } from './Tool.js';
-
 /**
  * RecipeJS
  * your final JavaScript library, lel
  * __________________________________________________________________
  */
+
+import { Dom } from './Dom.js';
+import { Css } from './Css.js';
+import { Event } from './Event.js';
+import { Focus } from './Focus.js';
+import { Tool } from './Tool.js';
 
 export class RecipeJS
 {
@@ -41,10 +41,16 @@ export class RecipeJS
 
   /**
    * attach our event listeners
+   * call this after initializing the object
    * ________________________________________________________________
    */
-  attach()
+  attach(newEvtNames = [])
   {
+    if (newEvtNames.length > 0)
+    {
+      this.events = newEvtNames;
+    }
+
     for (let evName of this.events)
     {
       window.addEventListener(evName, this.handler, true);
@@ -242,8 +248,8 @@ export class RecipeJS
 
   /**
    * check if a BLUR event happens while we are
-   * hitting the submit button - in this case we
-   * cancel it.
+   * hitting a submit button - in this case we
+   * will cancel the BLUR event.
    * ________________________________________________________________
    */
   isBlurOnSubmit(ev)
