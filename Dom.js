@@ -62,12 +62,18 @@ export class Dom
 
   before(elem, rcp)
   {
-    elem.insertAdjacentElement('beforebegin', this.str2el(rcp.html));
+    if (elem.parentNode)
+    {
+      elem.parentNode.insertBefore(this.str2el(rcp.html), elem);
+    }
   }
 
   after(elem, rcp)
   {
-    elem.insertAdjacentElement('afterend', this.str2el(rcp.html));
+    if (elem.parentNode)
+    {
+      elem.parentNode.insertBefore(this.str2el(rcp.html), elem.nextSibling);
+    }
   }
 
   attr(elem, rcp)
@@ -77,9 +83,16 @@ export class Dom
 
   str2el(htmlStr)
   {
-    let parser = new DOMParser();
-    let doc = parser.parseFromString(htmlStr, 'text/html');
-    return doc.body;
+    let template = document.createElement('template');
+    template.innerHTML = htmlStr.trim();
+    let fragment = template.content;
+
+    if (fragment.childNodes.length === 1)
+    {
+      return fragment.removeChild(fragment.firstChild);
+    }
+
+    return fragment;
   }
 
 }
