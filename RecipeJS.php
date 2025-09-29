@@ -145,7 +145,7 @@ class RecipeJS
     $this->addOutput(
     [
       'module' => 'css',
-      'method' => 'addClass',
+      'method' => 'replaceClass',
       'target' => $target,
       'oldName' => $oldName,
       'newName' => $newName

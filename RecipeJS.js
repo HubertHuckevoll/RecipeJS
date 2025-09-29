@@ -149,23 +149,37 @@ export class RecipeJS
    */
   async exec(url, params, reqNo)
   {
+    this.requestCounter++;
+    this.log('Requesting: ', reqNo, url, params);
+
     try
     {
-      this.requestCounter++;
-      this.log('Requesting: ', reqNo, url, params);
       await this.request(reqNo, url, params); // don't fuck with the await, I dare you!!!
-      this.requestCounter--;
-
-      if (this.requestCounter == 0)
-      {
-        this.cook();
-        this.requestQueue = [];
-        this.requestNo = 0;
-      }
     }
     catch (e)
     {
       this.log(e);
+    }
+    finally
+    {
+      this.requestCounter--;
+
+      if ((this.requestCounter == 0) && (this.requestQueue.length > 0))
+      {
+        try
+        {
+          this.cook();
+        }
+        catch (e)
+        {
+          this.log(e);
+        }
+        finally
+        {
+          this.requestQueue = [];
+          this.requestNo = 0;
+        }
+      }
     }
   }
 
@@ -175,33 +189,51 @@ export class RecipeJS
    */
   async request(reqNo, url, params)
   {
+    const reqData =
+    {
+      method: 'POST',
+      cache: 'no-cache',
+      headers:
+      {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      redirect: 'follow',
+      referrerPolicy: 'no-referrer',
+      body: JSON.stringify(params) // body data type must match "Content-Type" header
+    };
+
+    let resp = null;
+
     try
     {
-      let reqData =
-      {
-        method: 'POST',
-        mode: 'no-cors',
-        cache: 'no-cache',
-        headers:
-        {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        redirect: 'follow',
-        referrerPolicy: 'no-referrer',
-        body: JSON.stringify(params) // body data type must match "Content-Type" header
-      };
-
-      const resp = await fetch(url, reqData);
-      const js = await resp.json();
-
-      this.log('Fetched data for request no', reqNo, ', is:', js);
-      this.requestQueue[reqNo] = js;
+      resp = await fetch(url, reqData);
     }
     catch (e)
     {
-      this.log(e);
+      throw new Error('Request #' + reqNo + ' to "' + url + '" failed: ' + e.message);
     }
+
+    if (!resp.ok)
+    {
+      const statusText = resp.statusText ? ' (' + resp.statusText + ')' : '';
+      throw new Error('Request #' + reqNo + ' to "' + url + '" failed with status ' + resp.status + statusText);
+    }
+
+    let js = null;
+
+    try
+    {
+      js = await resp.json();
+    }
+    catch (e)
+    {
+      throw new Error('Request #' + reqNo + ' to "' + url + '" returned invalid JSON: ' + e.message);
+    }
+
+    this.log('Fetched data for request no', reqNo, ', is:', js);
+    this.requestQueue[reqNo] = js;
+    return js;
   }
 
   /**
@@ -210,11 +242,17 @@ export class RecipeJS
    */
   cook()
   {
-    this.requestQueue.forEach(async (js) =>
+    this.requestQueue.forEach(async (js, idx) =>
     {
+      if (!Array.isArray(js))
+      {
+        this.log('Skipping invalid recipe payload at index ' + idx + '.');
+        return;
+      }
+
       for (let rcp of js)
       {
-        if (this.modules[rcp.module] !== "undefined")
+        if (typeof this.modules[rcp.module] !== 'undefined')
         {
           try
           {
@@ -241,6 +279,10 @@ export class RecipeJS
           {
             this.log(e);
           }
+        }
+        else
+        {
+          this.log('Unknown module "' + rcp.module + '". Skipping recipe.');
         }
       }
     });

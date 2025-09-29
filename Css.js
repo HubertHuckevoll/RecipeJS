@@ -29,7 +29,7 @@ export class Css
     }
     else
     {
-      reject('css: "' + method + '" unknown.');
+      throw new Error('css: "' + method + '" unknown.');
     }
 
     return result;
@@ -67,7 +67,7 @@ export class Css
 
   toggleClass(nodes, rcp)
   {
-    return Promise((resolve, reject) =>
+    return new Promise((resolve, reject) =>
     {
       nodes.forEach((node) =>
       {
